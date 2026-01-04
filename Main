@@ -1,0 +1,178 @@
+import { Link, useLocation } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
+import { Home, Book, Hand, Heart, Compass, Menu, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+const navItems = [
+  { name: 'Home', icon: Home, page: 'Home' },
+  { name: 'Quran', icon: Book, page: 'Quran' },
+  { name: 'Duas', icon: Hand, page: 'Duas' },
+  { name: 'Dhikr', icon: Heart, page: 'Dhikr' },
+  { name: 'Qibla', icon: Compass, page: 'Qibla' },
+];
+
+export default function Layout({ children, currentPageName }) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  return (
+    <div className="min-h-screen bg-slate-50">
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
+        .font-arabic {
+          font-family: 'Amiri', serif;
+        }
+        :root {
+          --color-primary: #059669;
+          --color-primary-dark: #047857;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+          width: 6px;
+          height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+          background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+          background: #cbd5e1;
+          border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+          background: #94a3b8;
+        }
+      `}</style>
+      
+      {/* Mobile Header - Only show on mobile */}
+      <header className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-b border-slate-200/50">
+        <div className="flex items-center justify-between px-4 py-3">
+          <Link to={createPageUrl('Home')} className="flex items-center gap-2">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+              <span className="text-white font-bold text-lg">ﷲ</span>
+            </div>
+            <span className="font-bold text-slate-800">Noor</span>
+          </Link>
+          
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="p-2 rounded-lg hover:bg-slate-100 transition-colors"
+          >
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+        </div>
+        
+        {/* Mobile Menu Dropdown */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="bg-white border-t border-slate-100 overflow-hidden"
+            >
+              <nav className="p-2">
+                {navItems.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = currentPageName === item.page;
+                  return (
+                    <Link
+                      key={item.page}
+                      to={createPageUrl(item.page)}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
+                        isActive
+                          ? 'bg-emerald-50 text-emerald-700'
+                          : 'text-slate-600 hover:bg-slate-50'
+                      }`}
+                    >
+                      <Icon className="w-5 h-5" />
+                      <span className="font-medium">{item.name}</span>
+                    </Link>
+                  );
+                })}
+              </nav>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </header>
+      
+      {/* Desktop Sidebar */}
+      <aside className="hidden lg:flex fixed left-0 top-0 bottom-0 w-64 bg-white border-r border-slate-200 flex-col z-50">
+        {/* Logo */}
+        <div className="p-6 border-b border-slate-100">
+          <Link to={createPageUrl('Home')} className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/30">
+              <span className="text-white font-bold text-xl">ﷲ</span>
+            </div>
+            <div>
+              <span className="font-bold text-xl text-slate-800">Noor</span>
+              <p className="text-xs text-slate-400">Islamic Companion</p>
+            </div>
+          </Link>
+        </div>
+        
+        {/* Navigation */}
+        <nav className="flex-1 p-4 space-y-1">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = currentPageName === item.page;
+            return (
+              <Link
+                key={item.page}
+                to={createPageUrl(item.page)}
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
+                  isActive
+                    ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/30'
+                    : 'text-slate-600 hover:bg-slate-50'
+                }`}
+              >
+                <Icon className={`w-5 h-5 ${isActive ? '' : 'group-hover:text-emerald-600'}`} />
+                <span className="font-medium">{item.name}</span>
+              </Link>
+            );
+          })}
+        </nav>
+        
+        {/* Footer */}
+        <div className="p-4 border-t border-slate-100">
+          <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-4">
+            <p className="text-emerald-800 font-arabic text-lg text-center mb-1">بِسْمِ اللَّهِ</p>
+            <p className="text-emerald-600 text-xs text-center">In the name of Allah</p>
+          </div>
+        </div>
+      </aside>
+      
+      {/* Main Content */}
+      <main className="lg:ml-64 pt-14 lg:pt-0 pb-20 lg:pb-0">
+        {children}
+      </main>
+      
+      {/* Mobile Bottom Navigation */}
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-lg border-t border-slate-200/50 z-50 safe-area-bottom">
+        <div className="flex items-center justify-around py-2">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = currentPageName === item.page;
+            return (
+              <Link
+                key={item.page}
+                to={createPageUrl(item.page)}
+                className={`flex flex-col items-center py-2 px-4 rounded-xl transition-all ${
+                  isActive 
+                    ? 'text-emerald-600' 
+                    : 'text-slate-400 hover:text-slate-600'
+                }`}
+              >
+                <div className={`p-2 rounded-xl transition-all ${
+                  isActive ? 'bg-emerald-100' : ''
+                }`}>
+                  <Icon className="w-5 h-5" />
+                </div>
+                <span className="text-xs mt-1 font-medium">{item.name}</span>
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
+    </div>
+  );
+}
