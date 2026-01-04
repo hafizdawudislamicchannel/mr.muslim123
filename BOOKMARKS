@@ -1,0 +1,26 @@
+{
+  "name": "Bookmark",
+  "type": "object",
+  "properties": {
+    "surah_number": {
+      "type": "number",
+      "description": "Surah number"
+    },
+    "ayah_number": {
+      "type": "number",
+      "description": "Ayah number"
+    },
+    "surah_name": {
+      "type": "string",
+      "description": "Name of the surah"
+    },
+    "note": {
+      "type": "string",
+      "description": "Personal note"
+    }
+  },
+  "required": [
+    "surah_number",
+    "ayah_number"
+  ]
+}
