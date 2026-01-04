@@ -1,0 +1,123 @@
+import React, { useState, useEffect } from 'react';
+import { Card } from "@/components/ui/card";
+import { Compass, Navigation } from 'lucide-react';
+import { motion } from 'framer-motion';
+
+export default function QiblaCompass() {
+  const [qiblaDirection, setQiblaDirection] = useState(0);
+  const [userDirection, setUserDirection] = useState(0);
+  const [hasPermission, setHasPermission] = useState(false);
+
+  useEffect(() => {
+    // Calculate Qibla direction (Kaaba coordinates: 21.4225° N, 39.8262° E)
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        const lat = position.coords.latitude * Math.PI / 180;
+        const lng = position.coords.longitude * Math.PI / 180;
+        const kaabaLat = 21.4225 * Math.PI / 180;
+        const kaabaLng = 39.8262 * Math.PI / 180;
+        
+        const y = Math.sin(kaabaLng - lng);
+        const x = Math.cos(lat) * Math.tan(kaabaLat) - Math.sin(lat) * Math.cos(kaabaLng - lng);
+        let qibla = Math.atan2(y, x) * 180 / Math.PI;
+        
+        setQiblaDirection(qibla);
+      });
+    }
+
+    // Device orientation for compass
+    const handleOrientation = (event) => {
+      if (event.webkitCompassHeading) {
+        setUserDirection(event.webkitCompassHeading);
+        setHasPermission(true);
+      } else if (event.alpha) {
+        setUserDirection(360 - event.alpha);
+        setHasPermission(true);
+      }
+    };
+
+    if (window.DeviceOrientationEvent) {
+      window.addEventListener('deviceorientation', handleOrientation, true);
+    }
+
+    return () => {
+      window.removeEventListener('deviceorientation', handleOrientation);
+    };
+  }, []);
+
+  const rotation = qiblaDirection - userDirection;
+
+  return (
+    <Card className="overflow-hidden bg-gradient-to-br from-slate-900 to-slate-800 border-0 p-6">
+      <div className="text-center mb-4">
+        <h3 className="text-white font-semibold text-lg">Qibla Direction</h3>
+        <p className="text-slate-400 text-sm">Face the direction of Kaaba</p>
+      </div>
+      
+      <div className="relative w-48 h-48 mx-auto">
+        {/* Outer ring */}
+        <div className="absolute inset-0 rounded-full border-4 border-slate-700" />
+        
+        {/* Direction markers */}
+        <div className="absolute inset-2 rounded-full">
+          {['N', 'E', 'S', 'W'].map((dir, i) => (
+            <span
+              key={dir}
+              className="absolute text-slate-500 font-bold text-sm"
+              style={{
+                top: i === 0 ? '0' : i === 2 ? 'auto' : '50%',
+                bottom: i === 2 ? '0' : 'auto',
+                left: i === 3 ? '0' : i === 1 ? 'auto' : '50%',
+                right: i === 1 ? '0' : 'auto',
+                transform: (i === 0 || i === 2) ? 'translateX(-50%)' : 'translateY(-50%)'
+              }}
+            >
+              {dir}
+            </span>
+          ))}
+        </div>
+        
+        {/* Compass needle */}
+        <motion.div
+          className="absolute inset-4"
+          animate={{ rotate: hasPermission ? rotation : 45 }}
+          transition={{ type: 'spring', damping: 20 }}
+        >
+          <div className="w-full h-full relative">
+            {/* Needle */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1 h-1/2 origin-bottom">
+              <div className="w-0 h-0 border-l-[8px] border-r-[8px] border-b-[24px] border-l-transparent border-r-transparent border-b-emerald-500" />
+            </div>
+            {/* Center dot */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full shadow-lg flex items-center justify-center">
+              <div className="w-2 h-2 bg-white rounded-full" />
+            </div>
+          </div>
+        </motion.div>
+        
+        {/* Kaaba icon at the edge */}
+        <motion.div
+          className="absolute w-10 h-10 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center shadow-lg"
+          style={{
+            top: '50%',
+            left: '50%',
+            transformOrigin: 'center center'
+          }}
+          animate={{
+            x: Math.sin((hasPermission ? rotation : 45) * Math.PI / 180) * 80 - 20,
+            y: -Math.cos((hasPermission ? rotation : 45) * Math.PI / 180) * 80 - 20
+          }}
+          transition={{ type: 'spring', damping: 20 }}
+        >
+          <span className="text-lg">🕋</span>
+        </motion.div>
+      </div>
+      
+      <p className="text-center text-slate-400 text-sm mt-4">
+        {hasPermission 
+          ? `${Math.round(qiblaDirection)}° from North`
+          : 'Point device towards Qibla'}
+      </p>
+    </Card>
+  );
+}
