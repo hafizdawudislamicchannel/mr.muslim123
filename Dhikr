@@ -1,0 +1,73 @@
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Heart } from 'lucide-react';
+import TasbihCounter from '@/components/dhikr/TasbihCounter';
+
+export default function Dhikr() {
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
+      {/* Header */}
+      <div className="px-4 py-8 text-center">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center justify-center gap-3 mb-2"
+        >
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center">
+            <Heart className="w-6 h-6 text-white" />
+          </div>
+          <h1 className="text-white text-2xl font-bold">Dhikr & Tasbih</h1>
+        </motion.div>
+        <p className="text-slate-400">Remember Allah, and He will remember you</p>
+      </div>
+      
+      {/* Main Content */}
+      <div className="max-w-lg mx-auto px-4 pb-24">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <TasbihCounter />
+        </motion.div>
+        
+        {/* Tips Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="mt-6 p-4 bg-white/5 rounded-2xl border border-white/10"
+        >
+          <h3 className="text-white font-semibold mb-3">💡 Daily Dhikr Tips</h3>
+          <ul className="space-y-2 text-slate-300 text-sm">
+            <li className="flex items-start gap-2">
+              <span className="text-emerald-400">•</span>
+              Say SubhanAllah, Alhamdulillah, and Allahu Akbar 33 times each after every prayer
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-emerald-400">•</span>
+              Complete with La ilaha illallah to reach 100
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-emerald-400">•</span>
+              The Prophet ﷺ said this dhikr will forgive sins even if they are like sea foam
+            </li>
+          </ul>
+        </motion.div>
+        
+        {/* Virtue Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="mt-4 p-4 bg-gradient-to-br from-emerald-600/20 to-teal-600/20 rounded-2xl border border-emerald-500/30"
+        >
+          <p className="text-emerald-300 text-sm italic">
+            "SubhanAllahi wa bihamdihi, SubhanAllahil Azeem - these two words are light on the tongue, heavy on the Scale, and beloved to the Most Merciful."
+          </p>
+          <p className="text-emerald-400/70 text-xs mt-2">— Sahih al-Bukhari</p>
+        </motion.div>
+      </div>
+    </div>
+  );
+}
