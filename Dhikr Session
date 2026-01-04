@@ -1,0 +1,27 @@
+{
+  "name": "DhikrSession",
+  "type": "object",
+  "properties": {
+    "dhikr_type": {
+      "type": "string",
+      "description": "Type of dhikr (SubhanAllah, Alhamdulillah, etc)"
+    },
+    "count": {
+      "type": "number",
+      "description": "Number of times recited"
+    },
+    "target": {
+      "type": "number",
+      "description": "Target count"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the session was completed"
+    }
+  },
+  "required": [
+    "dhikr_type",
+    "count"
+  ]
+}
