@@ -1,0 +1,229 @@
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Play, Pause, BookOpen, Bookmark, Volume2, ChevronLeft, ChevronRight, Settings } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import SurahList from '@/components/quran/SurahList';
+
+const reciters = [
+  { id: 'ar.alafasy', name: 'Mishary Rashid Alafasy' },
+  { id: 'ar.abdulbasit', name: 'Abdul Basit Abdul Samad' },
+  { id: 'ar.minshawi', name: 'Mohamed Siddiq El-Minshawi' },
+];
+
+export default function Quran() {
+  const [selectedSurah, setSelectedSurah] = useState(null);
+  const [ayahs, setAyahs] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [selectedReciter, setSelectedReciter] = useState('ar.alafasy');
+  const [showTranslation, setShowTranslation] = useState(true);
+  const [currentAyah, setCurrentAyah] = useState(null);
+
+  useEffect(() => {
+    if (selectedSurah) {
+      fetchSurah(selectedSurah.number);
+    }
+  }, [selectedSurah]);
+
+  const fetchSurah = async (surahNumber) => {
+    setLoading(true);
+    try {
+      // Fetch Arabic text
+      const arabicRes = await fetch(`https://api.alquran.cloud/v1/surah/${surahNumber}`);
+      const arabicData = await arabicRes.json();
+      
+      // Fetch English translation
+      const translationRes = await fetch(`https://api.alquran.cloud/v1/surah/${surahNumber}/en.asad`);
+      const translationData = await translationRes.json();
+      
+      // Combine data
+      const combined = arabicData.data.ayahs.map((ayah, index) => ({
+        ...ayah,
+        translation: translationData.data.ayahs[index]?.text || ''
+      }));
+      
+      setAyahs(combined);
+    } catch (error) {
+      console.error('Error fetching surah:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const playAyah = (ayah) => {
+    const audio = new Audio(
+      `https://cdn.islamic.network/quran/audio/128/${selectedReciter}/${ayah.number}.mp3`
+    );
+    audio.play();
+    setCurrentAyah(ayah.numberInSurah);
+    setIsPlaying(true);
+    audio.onended = () => {
+      setIsPlaying(false);
+      setCurrentAyah(null);
+    };
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-white">
+      {/* Header */}
+      <div className="bg-gradient-to-br from-emerald-700 to-teal-800 text-white px-4 py-8">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-center gap-3 mb-2">
+            <BookOpen className="w-8 h-8" />
+            <h1 className="text-2xl font-bold">Holy Quran</h1>
+          </div>
+          <p className="text-emerald-100">Read and listen to the words of Allah</p>
+        </div>
+      </div>
+      
+      <div className="max-w-6xl mx-auto px-4 py-6">
+        <div className="grid lg:grid-cols-3 gap-6">
+          {/* Surah List Panel */}
+          <div className="lg:col-span-1">
+            <Card className="p-4 bg-white shadow-lg border-0">
+              <h2 className="font-semibold text-slate-800 mb-4">Surahs</h2>
+              <SurahList 
+                onSelect={setSelectedSurah}
+                selectedSurah={selectedSurah}
+              />
+            </Card>
+          </div>
+          
+          {/* Reading Panel */}
+          <div className="lg:col-span-2">
+            {selectedSurah ? (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+              >
+                {/* Surah Header */}
+                <Card className="mb-4 overflow-hidden border-0 shadow-lg">
+                  <div className="bg-gradient-to-br from-emerald-600 to-teal-700 p-6 text-white text-center relative">
+                    <div className="absolute inset-0 opacity-10">
+                      <div className="absolute inset-0" style={{
+                        backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+                      }} />
+                    </div>
+                    <div className="relative z-10">
+                      <p className="text-emerald-200 text-sm mb-1">Surah {selectedSurah.number}</p>
+                      <h2 className="text-4xl font-arabic mb-1">{selectedSurah.arabic}</h2>
+                      <h3 className="text-xl font-semibold">{selectedSurah.name}</h3>
+                      <p className="text-emerald-200 text-sm">{selectedSurah.translation} • {selectedSurah.verses} Ayahs</p>
+                    </div>
+                  </div>
+                  
+                  {/* Controls */}
+                  <div className="p-4 bg-white flex items-center justify-between flex-wrap gap-3">
+                    <Select value={selectedReciter} onValueChange={setSelectedReciter}>
+                      <SelectTrigger className="w-[200px]">
+                        <Volume2 className="w-4 h-4 mr-2" />
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {reciters.map(r => (
+                          <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowTranslation(!showTranslation)}
+                      className={showTranslation ? 'bg-emerald-50 border-emerald-300' : ''}
+                    >
+                      {showTranslation ? 'Hide' : 'Show'} Translation
+                    </Button>
+                  </div>
+                </Card>
+                
+                {/* Bismillah */}
+                {selectedSurah.number !== 1 && selectedSurah.number !== 9 && (
+                  <div className="text-center py-6">
+                    <p className="text-3xl font-arabic text-emerald-700">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+                  </div>
+                )}
+                
+                {/* Ayahs */}
+                <Card className="p-6 bg-white shadow-lg border-0">
+                  {loading ? (
+                    <div className="flex items-center justify-center py-12">
+                      <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+                    </div>
+                  ) : (
+                    <div className="space-y-6">
+                      {ayahs.map((ayah) => (
+                        <motion.div
+                          key={ayah.number}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className={`p-4 rounded-xl transition-colors ${
+                            currentAyah === ayah.numberInSurah
+                              ? 'bg-emerald-50 border border-emerald-200'
+                              : 'hover:bg-slate-50'
+                          }`}
+                        >
+                          <div className="flex items-start gap-4">
+                            {/* Ayah Number */}
+                            <div className="flex-shrink-0">
+                              <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-semibold text-sm">
+                                {ayah.numberInSurah}
+                              </div>
+                            </div>
+                            
+                            {/* Content */}
+                            <div className="flex-1 space-y-3">
+                              <p className="text-2xl md:text-3xl font-arabic text-slate-800 leading-loose text-right">
+                                {ayah.text}
+                              </p>
+                              
+                              {showTranslation && (
+                                <p className="text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
+                                  {ayah.translation}
+                                </p>
+                              )}
+                            </div>
+                            
+                            {/* Actions */}
+                            <div className="flex flex-col gap-2">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => playAyah(ayah)}
+                                className="h-8 w-8 text-slate-400 hover:text-emerald-600"
+                              >
+                                {currentAyah === ayah.numberInSurah && isPlaying ? (
+                                  <Pause className="w-4 h-4" />
+                                ) : (
+                                  <Play className="w-4 h-4" />
+                                )}
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-slate-400 hover:text-amber-500"
+                              >
+                                <Bookmark className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  )}
+                </Card>
+              </motion.div>
+            ) : (
+              <Card className="p-12 text-center bg-white shadow-lg border-0">
+                <BookOpen className="w-16 h-16 mx-auto text-emerald-300 mb-4" />
+                <h3 className="text-xl font-semibold text-slate-700 mb-2">Select a Surah</h3>
+                <p className="text-slate-500">Choose a surah from the list to start reading</p>
+              </Card>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
