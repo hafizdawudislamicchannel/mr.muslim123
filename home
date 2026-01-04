@@ -1,0 +1,103 @@
+import React from 'react';
+import { motion } from 'framer-motion';
+import PrayerTimesCard from '@/components/prayer/PrayerTimesCard';
+import IslamicDateCard from '@/components/home/IslamicDateCard';
+import HadithCard from '@/components/home/HadithCard';
+import QuickActions from '@/components/home/QuickActions';
+
+export default function Home() {
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
+      {/* Hero Section with Welcome */}
+      <div className="relative overflow-hidden">
+        {/* Decorative Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800" />
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M40 40c0-11.046-8.954-20-20-20v20h20zm0 0c0 11.046 8.954 20 20 20V40H40z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          }} />
+        </div>
+        
+        <div className="relative z-10 px-4 pt-8 pb-12">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center mb-8"
+          >
+            <p className="text-emerald-200 text-sm uppercase tracking-widest mb-2">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+            <h1 className="text-white text-3xl md:text-4xl font-bold mb-2">Salam</h1>
+            <p className="text-emerald-100">Your companion for Islamic practice</p>
+          </motion.div>
+        </div>
+        
+        {/* Curved Bottom */}
+        <div className="absolute bottom-0 left-0 right-0">
+          <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="#f8fafc"/>
+          </svg>
+        </div>
+      </div>
+      
+      {/* Main Content */}
+      <div className="max-w-4xl mx-auto px-4 -mt-4 pb-24 space-y-6">
+        {/* Prayer Times */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <PrayerTimesCard />
+        </motion.div>
+        
+        {/* Quick Actions */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <QuickActions />
+        </motion.div>
+        
+        {/* Islamic Date & Hadith Grid */}
+        <div className="grid md:grid-cols-2 gap-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <IslamicDateCard />
+          </motion.div>
+          
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            <HadithCard />
+          </motion.div>
+        </div>
+        
+        {/* Featured Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="bg-gradient-to-br from-purple-600 to-indigo-700 rounded-2xl p-6 text-white relative overflow-hidden"
+        >
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2" />
+          
+          <div className="relative z-10">
+            <h3 className="text-lg font-bold mb-2">Begin Your Quran Journey</h3>
+            <p className="text-purple-200 text-sm mb-4">Read, listen, and memorize the Holy Quran with ease.</p>
+            <button 
+              onClick={() => window.location.href = '/Quran'}
+              className="bg-white text-purple-700 px-6 py-2 rounded-lg font-semibold hover:bg-purple-50 transition-colors"
+            >
+              Start Reading
+            </button>
+          </div>
+        </motion.div>
+      </div>
+    </div>
+  );
