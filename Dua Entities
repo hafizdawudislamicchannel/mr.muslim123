@@ -1,0 +1,44 @@
+{
+  "name": "Dua",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Title of the dua"
+    },
+    "arabic_text": {
+      "type": "string",
+      "description": "Dua in Arabic"
+    },
+    "transliteration": {
+      "type": "string",
+      "description": "Transliteration of the dua"
+    },
+    "translation": {
+      "type": "string",
+      "description": "English translation"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "morning",
+        "evening",
+        "prayer",
+        "protection",
+        "forgiveness",
+        "gratitude",
+        "general"
+      ],
+      "description": "Category of the dua"
+    },
+    "source": {
+      "type": "string",
+      "description": "Hadith source"
+    }
+  },
+  "required": [
+    "title",
+    "arabic_text",
+    "translation"
+  ]
+}
